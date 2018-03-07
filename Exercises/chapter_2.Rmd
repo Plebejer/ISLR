@@ -55,9 +55,11 @@ College %<>% as_tibble()
 ```
 (b)
 ```{r}
+College %<>%
+  rownames_to_column(var = "University")
+
 College
 ```
-University names are already rownames.
 
 (c)
 
