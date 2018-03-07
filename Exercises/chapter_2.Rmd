@@ -23,6 +23,16 @@ output:
 
 (@)
 (a) 
+```{r}
+library(tidyverse)
+library(magrittr)
+
+  tibble(flexibility = 1:5,
+         squared_bias = c(3, .6, 0.5, 0.49, 0.48)) %>% 
+  ggplot(aes(x = flexibility, y = squared_bias)) +
+  geom_smooth()
+```
+
 (b) 
 
 (@)
@@ -39,7 +49,9 @@ output:
 (a)
 ```{r}
 library(ISLR)
+
 data(College)
+College %<>% as_tibble()
 ```
 (b)
 ```{r}
