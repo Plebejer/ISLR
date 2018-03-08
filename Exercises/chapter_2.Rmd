@@ -5,8 +5,25 @@ output:
   html_document:
     df_print: default
     toc: yes
-  
+editor_options: 
+  chunk_output_type: inline
 ---
+
+```{r setup}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(tidyverse)
+library(magrittr)
+library(ISLR)
+library(skimr)
+library(GGally)
+library(cowplot)
+
+theme_set(theme_minimal())
+```
 
 # Conceptual
 
@@ -17,48 +34,59 @@ output:
 (d) One might expect less flexible methods to perform better in this setting since they do not catch every bit of variance in the data and therefore provide more smoothing. Flexible methods on the other hand are likely to overfit.
     
 (@)
-(a) $n = 500$; $p = 3$; regression problem; inference
-(b) $n = 20$; $p = 13$; classification problem; prediction
-(c) $n = 52$; $p = 3$; regression problem; prediction
+(a) regression problem; inference; n = 500; p = 3
+(b) classification problem; prediction; n = 20; p = 13
+(c) regression problem; prediction; n = 52; p = 3
 
 (@)
+(a) ![](images/2.4.3a.png)
+
+(b) The _bias curve_ decreases monotonically since more flexible methods capture more of the variation in the data, resulting in lower bias. The _variance_ curve increases monotonically because higher flexibility allows to reflect smaller details in the data. This results in higher variance. The _training error_ decreases monotonically because more flexible methods can ultimately catch up every variation in the data, including white noise. Therefore the training error can be reduced to zero. The _test error_ curve follows a U-shape. In the beginning, more flexibility leads to lower bias and therefore lower test errors. With increasing flexibility, methods begin to overfit the data by capturing white noise. The _Bayes error_ curve is a horizontal line because
+
+(@) To be added
+
+(@) A very flexible approach is able to take into account very small bits of variation in the data. This makes flexible approaches prone to overfitting. If the true relation of of response and predictors is non-linear, more flexible approaches have advantages because they can reflect the non-linear relation better. Also, if prediction accuracy is more important than interpretability of a model, more flexible approaches might be better. Less flexible approaches have advantages when it comes to interpretability of results rather than prediction accuracy.
+
+(@) A parametric approach assumes a specific relation between response and predictors. This is good, when the true relationship is similar to the assumed one because fitting parametric models is easy in comparison to fitting non-parametric models. This is bad, if the assumed relationship is very different from the true relationship, resulting in a poor fit.
+
+(@) 
 (a) 
 ```{r}
-library(tidyverse)
-library(magrittr)
+table <- 
+  tibble(obs = 1:6,
+         X_1 = c(0, 2, 0, 0,-1, 1),
+         X_2 = c(3, 0, 1, 1, 0, 1),
+         X_3 = c(0, 0, 3, 2, 1, 1),
+         Y = c("Red", "Red", "Red", "Green", "Green", "Red")) %>% 
+  mutate(eucl_dist = sqrt((X_1 - 0)^2 + (X_2 - 0)^2 + (X_3 - 0)^2))
 
-  tibble(flexibility = 1:5,
-         squared_bias = c(3, .6, 0.5, 0.49, 0.48)) %>% 
-  ggplot(aes(x = flexibility, y = squared_bias)) +
-  geom_smooth()
+table
 ```
 
 (b) 
+```{r}
+table %>% 
+  arrange(eucl_dist) 
+```
+My prediction is "Green" because obs 5 shows the lowest euclidian distance and Y(obs = 5) = "Green".
 
-(@)
+(c) My prediction is "Red" because 2 out of those 3 obs with lowest euclidian distance have Y = "Red".
 
-(@)
-
-(@)
-
-(@)
-
+(d) We would expect that the best value of _K_ is rather low, because this allows for more variance in the predictions.
 
 # Applied
 (@)
 (a)
 ```{r}
-library(ISLR)
-
 data(College)
 College %<>% as_tibble()
 ```
 (b)
 ```{r}
-College %<>%
+College %>%
   rownames_to_column(var = "University")
 
-College
+View(College)
 ```
 
 (c)
@@ -66,13 +94,40 @@ College
 i.
 ```{r}
 summary(College)
+
+skim(College)
 ```
 
 ii.
 ```{r}
-pairs(College)
+pairs(College[, 1:5])
 
-library(GGally)
-ggpairs(College)
+ggpairs(College[, 1:5],
+        aes(color = Private)) %>% 
+  print(progress = FALSE)
 ```
 
+iii.
+```{r}
+ggplot(College, aes(x = Private, y = Outstate)) + 
+  geom_boxplot()
+```
+
+iv.
+```{r}
+College %<>% 
+  mutate(Elite = if_else(Top10perc > 50,
+                         "Yes", "No") %>% 
+           factor())
+
+College %>% 
+  count(Elite)
+
+ggplot(College, aes(x = Elite, y = Outstate)) + 
+  geom_boxplot()
+```
+
+v.
+```{r}
+
+```
