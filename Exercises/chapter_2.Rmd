@@ -1,11 +1,13 @@
 ---
 title: "Exercises Chapter 2"
 output:
-  html_notebook:
   html_document:
     df_print: default
     toc: yes
-editor_options: 
+  html_notebook: null
+  pdf_document:
+    toc: yes
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -15,6 +17,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+library(MASS)
 library(tidyverse)
 library(magrittr)
 library(ISLR)
@@ -78,15 +81,12 @@ My prediction is "Green" because obs 5 shows the lowest euclidian distance and Y
 (@)
 (a)
 ```{r}
-data(College)
-College %<>% as_tibble()
+College <- as_tibble(College)
 ```
 (b)
 ```{r}
 College %>%
   rownames_to_column(var = "University")
-
-View(College)
 ```
 
 (c)
@@ -129,5 +129,142 @@ ggplot(College, aes(x = Elite, y = Outstate)) +
 
 v.
 ```{r}
+bins <- c(5, 10, 20, 40)
+flex_hist <- function(var, bins, df) {
+  var <- rlang::sym(var)
+  map(bins, 
+      ~ ggplot(df, aes_((var))) +
+        geom_histogram(bins = .x) +
+        labs(subtitle = str_c("bins = ", .x)))
+}
 
+plots <- map(c("Apps", "Accept", "Enroll", "Grad.Rate"),
+             flex_hist, bins = bins, df = College) 
+
+map(plots, 
+    ~ plot_grid(plotlist = .x, ncol = 2))
+```
+
+vi. To be amended
+
+(@) 
+```{r}
+Auto <- as_tibble(Auto)
+
+Auto %>% filter_all(any_vars(is.na(.)))
+```
+No `NA`s in the data.
+
+a.
+```{r}
+glimpse(Auto)
+```
+
+`origin` is the only qualitative predictor. `name` is rather a row id, all other variables are quantitative.
+
+```{r}
+Auto %<>%
+  mutate(origin = factor(origin, 
+                         levels = 1:3,
+                         labels = c("American", "European", "Japanese")))
+```
+
+b. see (c)
+
+c. 
+```{r}
+lower.boundary <- function(x) {range(x, na.rm = TRUE)[1]}
+upper.boundary <- function(x) {range(x, na.rm = TRUE)[2]}
+
+Auto %>% 
+  summarise_if(is.numeric,
+               funs("mean", "sd", "lower.boundary", "upper.boundary")) %>% 
+  gather() %>% 
+  separate(key, into = c("variable", "measure"), sep = "_") %>% 
+  spread(measure, value) %>% 
+  dplyr::select(variable, ends_with("boundary"), everything())
+```
+
+d.
+```{r}
+Auto %>% 
+  slice(-(10:85)) %>% 
+  summarise_if(is.numeric,
+               funs("mean", "sd", "lower.boundary", "upper.boundary")) %>% 
+  gather() %>% 
+  separate(key, into = c("variable", "measure"), sep = "_") %>% 
+  spread(measure, value) %>% 
+  dplyr::select(variable, ends_with("boundary"), everything())
+```
+
+e.
+```{r, fig.height = 8}
+Auto %>% 
+  dplyr::select(-year, -name) %>% 
+  ggpairs(aes(color = origin)) %>% 
+  print(progress = FALSE)
+```
+
+f. `cylinders`, `displacement`, `horsepower` and `weight` show a strong negative correlation with `mpg` so these should be included in the model.
+
+(@)
+a.
+```{r}
+Boston <- as_tibble(Boston) %>% 
+  mutate(chas = factor(chas, levels = 0:1, labels = c("otherwise", "river bound")))
+dim(Boston)
+```
+
+Rows represent suburbs, columns represent characteristics of these suburbs.
+
+b.
+```{r, fig.height = 8}
+Boston %>% 
+  ggpairs() %>% 
+  print(progress = FALSE)
+```
+
+c. Basically all predictors are associated with `crim`, but not in a linear way. Hence, the correlations are rather low.
+
+d.
+```{r}
+Boston %>% 
+  top_n(n = 10, wt = crim)
+
+map2(rlang::quos(crim, tax, ptratio), c(5, 5, 1),
+    ~ ggplot(Boston, aes_(.x)) +
+      geom_histogram(binwidth = .y)) %>% 
+  plot_grid(plotlist = .)
+```
+
+e. 
+```{r}
+Boston %>% 
+  count(chas)
+```
+
+f.
+```{r}
+Boston %>% 
+  summarise(median(ptratio))
+```
+
+g.
+```{r}
+Boston %>% 
+  mutate(low_medv = if_else(medv == min(medv), TRUE, FALSE)) %>% 
+  group_by(low_medv) %>% 
+  summarise_if(is.numeric, mean)
+```
+
+h.
+```{r}
+map_df(list("rm > 7" = 7, "rm > 8" = 8), 
+       ~ Boston %>% 
+         filter(rm > .x) %>% 
+         nrow())
+
+Boston %>% 
+  group_by(rm > 8) %>% 
+  summarise_if(is.numeric, mean)
 ```
