@@ -1,11 +1,11 @@
 ---
 title: "Exercises Chapter 2"
 output:
-  html_document:
-    df_print: default
-    toc: yes
-  html_notebook: null
   pdf_document:
+    latex_engine: lualatex
+    toc: yes
+  html_document:
+    df_print: tibble
     toc: yes
 editor_options:
   chunk_output_type: inline
