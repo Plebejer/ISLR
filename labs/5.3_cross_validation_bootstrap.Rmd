@@ -1,0 +1,34 @@
+---
+title: "5.3 Cross-Validation and the Bootstrap"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: yes
+  html_document:
+    df_print: tibble
+    toc: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(tidyverse)
+library(ISLR)
+library(skimr)
+library(mlr)
+
+theme_set(theme_minimal())
+```
+
+```{r}
+set.seed(42)
+data(Auto)
+
+lm_learner <- makeLearner("regr.lm")
+
+```
