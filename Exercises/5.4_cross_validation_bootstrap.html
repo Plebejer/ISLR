@@ -125,6 +125,7 @@ $(document).ready(function () {
 <ul>
 <li><a href="#applied">Applied</a><ul>
 <li><a href="#section">5</a></li>
+<li><a href="#section-1">6</a></li>
 </ul></li>
 </ul>
 </div>
@@ -141,12 +142,11 @@ $(document).ready(function () {
 set.seed(42)
 
 
-binom_task &lt;- makeClassifTask(data = select(Default, default, income, balance),
+binom_task &lt;- makeClassifTask(data = Default %&gt;% select(default, income, balance),
                               target = &quot;default&quot;)
 
 binom_learner &lt;- makeLearner(&quot;classif.binomial&quot;, 
-                           id = &quot;logistic_regression&quot;,
-                           predict.type = &quot;response&quot;)
+                             predict.type = &quot;response&quot;)
 
 binom_model &lt;- train(learner = binom_learner, 
                      task    = binom_task)
@@ -223,46 +223,46 @@ map(binom_resample_descs,
 #&gt; [Resample] Aggr. Result: mmce.test.mean=0.024
 #&gt; $`Holdout: 0.5`
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.0264
-#&gt; Runtime: 0.0357537
+#&gt; Runtime: 0.034447
 #&gt; 
 #&gt; $`Holdout: 0.4`
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.0232
-#&gt; Runtime: 0.0411742
+#&gt; Runtime: 0.0378919
 #&gt; 
 #&gt; $`Holdout: 0.3`
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.0277
-#&gt; Runtime: 0.0415709
+#&gt; Runtime: 0.0427055
 #&gt; 
 #&gt; $`Holdout: 0.2`
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.027
-#&gt; Runtime: 0.170477
+#&gt; Runtime: 0.171672
 #&gt; 
 #&gt; $`Holdout: 0.1`
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.024
-#&gt; Runtime: 0.0492229
+#&gt; Runtime: 0.0473053
 
 # standard mlr split training set 2/3, test set 1/3:
 binom_resample
 #&gt; Resample Result
-#&gt; Task: select(Default, default, income, balance)
-#&gt; Learner: logistic_regression
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
 #&gt; Aggr perf: mmce.test.mean=0.0249
-#&gt; Runtime: 0.17329</code></pre>
+#&gt; Runtime: 0.170706</code></pre>
 <ol start="4" style="list-style-type: lower-alpha">
 <li>Now consider a logistic regression model that predicts the probability of default using income, balance, and a dummy variable for student. Estimate the test error for this model using the validation set approach. Comment on whether or not including a dummy variable for student leads to a reduction in the test error rate.</li>
 </ol>
@@ -300,35 +300,1104 @@ map(binom_resample_descs_stud,
 #&gt; Task: Default
 #&gt; Learner: logistic_regression
 #&gt; Aggr perf: mmce.test.mean=0.0252
-#&gt; Runtime: 0.0416799
+#&gt; Runtime: 0.0413153
 #&gt; 
 #&gt; $`Holdout: 0.4`
 #&gt; Resample Result
 #&gt; Task: Default
 #&gt; Learner: logistic_regression
 #&gt; Aggr perf: mmce.test.mean=0.026
-#&gt; Runtime: 0.0438712
+#&gt; Runtime: 0.0441501
 #&gt; 
 #&gt; $`Holdout: 0.3`
 #&gt; Resample Result
 #&gt; Task: Default
 #&gt; Learner: logistic_regression
 #&gt; Aggr perf: mmce.test.mean=0.0243
-#&gt; Runtime: 0.171862
+#&gt; Runtime: 0.172647
 #&gt; 
 #&gt; $`Holdout: 0.2`
 #&gt; Resample Result
 #&gt; Task: Default
 #&gt; Learner: logistic_regression
 #&gt; Aggr perf: mmce.test.mean=0.028
-#&gt; Runtime: 0.0491195
+#&gt; Runtime: 0.0489733
 #&gt; 
 #&gt; $`Holdout: 0.1`
 #&gt; Resample Result
 #&gt; Task: Default
 #&gt; Learner: logistic_regression
 #&gt; Aggr perf: mmce.test.mean=0.033
-#&gt; Runtime: 0.0529075</code></pre>
+#&gt; Runtime: 0.0510941</code></pre>
+</div>
+<div id="section-1" class="section level2">
+<h2>6</h2>
+<p>We continue to consider the use of a logistic regression model to predict the probability of <code>default</code> using <code>income</code> and <code>balance</code> on the <code>Default</code> data set. In particular, we will now compute estimates for the standard errors of the <code>income</code> and <code>balance</code> logistic regression co- efficients in two different ways: (1) using the bootstrap, and (2) using the standard formula for computing the standard errors in the <code>glm()</code> function. Do not forget to set a random seed before beginning your analysis.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Using the <code>summary()</code> and <code>glm()</code> functions, determine the estimated standard errors for the coefficients associated with <code>income</code> and <code>balance</code> in a multiple logistic regression model that uses both predictors.</li>
+</ol>
+<pre class="r"><code>glm_model &lt;- glm(default ~ income + balance,
+                 data = Default,
+                 family = binomial)
+
+
+glm_model %&gt;% 
+  summary() %&gt;%
+  coefficients()
+#&gt;                  Estimate   Std. Error    z value      Pr(&gt;|z|)
+#&gt; (Intercept) -1.154047e+01 4.347564e-01 -26.544680 2.958355e-155
+#&gt; income       2.080898e-05 4.985167e-06   4.174178  2.990638e-05
+#&gt; balance      5.647103e-03 2.273731e-04  24.836280 3.638120e-136</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Write a function, <code>boot.fn()</code>, that takes as input the <code>Default</code> data set as well as an index of the observations, and that outputs the coefficient estimates for <code>income</code> and <code>balance</code> in the multiple logistic regression model.</li>
+</ol>
+<pre class="r"><code>boot.fn &lt;- function(df, index) {
+  glm(default ~ income + balance,
+      data = Default,
+      subset = index,
+      family = binomial) %&gt;% 
+    # summary() %&gt;%
+    coefficients()
+}</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Use the <code>boot()</code> function together with your <code>boot.fn()</code> function to estimate the standard errors of the logistic regression coefficients for <code>income</code> and <code>balance</code>.</li>
+</ol>
+<pre class="r"><code>library(boot)
+
+boot(Default, boot.fn, 1000)
+#&gt; 
+#&gt; ORDINARY NONPARAMETRIC BOOTSTRAP
+#&gt; 
+#&gt; 
+#&gt; Call:
+#&gt; boot(data = Default, statistic = boot.fn, R = 1000)
+#&gt; 
+#&gt; 
+#&gt; Bootstrap Statistics :
+#&gt;          original        bias     std. error
+#&gt; t1* -1.154047e+01 -3.316986e-02 4.463888e-01
+#&gt; t2*  2.080898e-05  1.567164e-07 5.105946e-06
+#&gt; t3*  5.647103e-03  1.562994e-05 2.350391e-04
+
+binom_resample_desc_boot &lt;- makeResampleDesc(method = &quot;Bootstrap&quot;,
+                                             iters  = 1000)
+
+binom_resample_boot &lt;-
+  resample(learner    = binom_learner,
+           task       = binom_task,
+           resampling = binom_resample_desc_boot,
+           extract    = function(x) getLearnerModel(x)$coefficients)
+#&gt; [Resample] OOB bootstrapping iter 1: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 2: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 3: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 4: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 5: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 6: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 7: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 8: mmce.test.mean=0.0306
+#&gt; [Resample] OOB bootstrapping iter 9: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 10: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 11: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 12: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 13: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 14: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 15: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 16: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 17: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 18: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 19: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 20: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 21: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 22: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 23: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 24: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 25: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 26: mmce.test.mean=0.0311
+#&gt; [Resample] OOB bootstrapping iter 27: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 28: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 29: mmce.test.mean=0.0223
+#&gt; [Resample] OOB bootstrapping iter 30: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 31: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 32: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 33: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 34: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 35: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 36: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 37: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 38: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 39: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 40: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 41: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 42: mmce.test.mean=0.0213
+#&gt; [Resample] OOB bootstrapping iter 43: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 44: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 45: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 46: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 47: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 48: mmce.test.mean=0.032
+#&gt; [Resample] OOB bootstrapping iter 49: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 50: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 51: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 52: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 53: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 54: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 55: mmce.test.mean=0.0316
+#&gt; [Resample] OOB bootstrapping iter 56: mmce.test.mean=0.0238
+#&gt; [Resample] OOB bootstrapping iter 57: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 58: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 59: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 60: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 61: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 62: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 63: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 64: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 65: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 66: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 67: mmce.test.mean=0.0232
+#&gt; [Resample] OOB bootstrapping iter 68: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 69: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 70: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 71: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 72: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 73: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 74: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 75: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 76: mmce.test.mean=0.0217
+#&gt; [Resample] OOB bootstrapping iter 77: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 78: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 79: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 80: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 81: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 82: mmce.test.mean=0.0295
+#&gt; [Resample] OOB bootstrapping iter 83: mmce.test.mean=0.0217
+#&gt; [Resample] OOB bootstrapping iter 84: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 85: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 86: mmce.test.mean=0.0301
+#&gt; [Resample] OOB bootstrapping iter 87: mmce.test.mean=0.0223
+#&gt; [Resample] OOB bootstrapping iter 88: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 89: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 90: mmce.test.mean=0.0226
+#&gt; [Resample] OOB bootstrapping iter 91: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 92: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 93: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 94: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 95: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 96: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 97: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 98: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 99: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 100: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 101: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 102: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 103: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 104: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 105: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 106: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 107: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 108: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 109: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 110: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 111: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 112: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 113: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 114: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 115: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 116: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 117: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 118: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 119: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 120: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 121: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 122: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 123: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 124: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 125: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 126: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 127: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 128: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 129: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 130: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 131: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 132: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 133: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 134: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 135: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 136: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 137: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 138: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 139: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 140: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 141: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 142: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 143: mmce.test.mean=0.0244
+#&gt; [Resample] OOB bootstrapping iter 144: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 145: mmce.test.mean=0.0295
+#&gt; [Resample] OOB bootstrapping iter 146: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 147: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 148: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 149: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 150: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 151: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 152: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 153: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 154: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 155: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 156: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 157: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 158: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 159: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 160: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 161: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 162: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 163: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 164: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 165: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 166: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 167: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 168: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 169: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 170: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 171: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 172: mmce.test.mean=0.0302
+#&gt; [Resample] OOB bootstrapping iter 173: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 174: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 175: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 176: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 177: mmce.test.mean=0.0298
+#&gt; [Resample] OOB bootstrapping iter 178: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 179: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 180: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 181: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 182: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 183: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 184: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 185: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 186: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 187: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 188: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 189: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 190: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 191: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 192: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 193: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 194: mmce.test.mean=0.022
+#&gt; [Resample] OOB bootstrapping iter 195: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 196: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 197: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 198: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 199: mmce.test.mean=0.0296
+#&gt; [Resample] OOB bootstrapping iter 200: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 201: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 202: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 203: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 204: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 205: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 206: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 207: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 208: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 209: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 210: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 211: mmce.test.mean=0.0224
+#&gt; [Resample] OOB bootstrapping iter 212: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 213: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 214: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 215: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 216: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 217: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 218: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 219: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 220: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 221: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 222: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 223: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 224: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 225: mmce.test.mean=0.0302
+#&gt; [Resample] OOB bootstrapping iter 226: mmce.test.mean=0.0304
+#&gt; [Resample] OOB bootstrapping iter 227: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 228: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 229: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 230: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 231: mmce.test.mean=0.0233
+#&gt; [Resample] OOB bootstrapping iter 232: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 233: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 234: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 235: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 236: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 237: mmce.test.mean=0.0301
+#&gt; [Resample] OOB bootstrapping iter 238: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 239: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 240: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 241: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 242: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 243: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 244: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 245: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 246: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 247: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 248: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 249: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 250: mmce.test.mean=0.0219
+#&gt; [Resample] OOB bootstrapping iter 251: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 252: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 253: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 254: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 255: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 256: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 257: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 258: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 259: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 260: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 261: mmce.test.mean=0.03
+#&gt; [Resample] OOB bootstrapping iter 262: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 263: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 264: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 265: mmce.test.mean=0.0309
+#&gt; [Resample] OOB bootstrapping iter 266: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 267: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 268: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 269: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 270: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 271: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 272: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 273: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 274: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 275: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 276: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 277: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 278: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 279: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 280: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 281: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 282: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 283: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 284: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 285: mmce.test.mean=0.0296
+#&gt; [Resample] OOB bootstrapping iter 286: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 287: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 288: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 289: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 290: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 291: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 292: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 293: mmce.test.mean=0.0239
+#&gt; [Resample] OOB bootstrapping iter 294: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 295: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 296: mmce.test.mean=0.0207
+#&gt; [Resample] OOB bootstrapping iter 297: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 298: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 299: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 300: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 301: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 302: mmce.test.mean=0.023
+#&gt; [Resample] OOB bootstrapping iter 303: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 304: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 305: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 306: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 307: mmce.test.mean=0.0244
+#&gt; [Resample] OOB bootstrapping iter 308: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 309: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 310: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 311: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 312: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 313: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 314: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 315: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 316: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 317: mmce.test.mean=0.031
+#&gt; [Resample] OOB bootstrapping iter 318: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 319: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 320: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 321: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 322: mmce.test.mean=0.0225
+#&gt; [Resample] OOB bootstrapping iter 323: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 324: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 325: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 326: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 327: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 328: mmce.test.mean=0.0295
+#&gt; [Resample] OOB bootstrapping iter 329: mmce.test.mean=0.0224
+#&gt; [Resample] OOB bootstrapping iter 330: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 331: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 332: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 333: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 334: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 335: mmce.test.mean=0.0195
+#&gt; [Resample] OOB bootstrapping iter 336: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 337: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 338: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 339: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 340: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 341: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 342: mmce.test.mean=0.022
+#&gt; [Resample] OOB bootstrapping iter 343: mmce.test.mean=0.0301
+#&gt; [Resample] OOB bootstrapping iter 344: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 345: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 346: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 347: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 348: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 349: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 350: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 351: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 352: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 353: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 354: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 355: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 356: mmce.test.mean=0.0222
+#&gt; [Resample] OOB bootstrapping iter 357: mmce.test.mean=0.0226
+#&gt; [Resample] OOB bootstrapping iter 358: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 359: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 360: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 361: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 362: mmce.test.mean=0.0304
+#&gt; [Resample] OOB bootstrapping iter 363: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 364: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 365: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 366: mmce.test.mean=0.0212
+#&gt; [Resample] OOB bootstrapping iter 367: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 368: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 369: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 370: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 371: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 372: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 373: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 374: mmce.test.mean=0.0298
+#&gt; [Resample] OOB bootstrapping iter 375: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 376: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 377: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 378: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 379: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 380: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 381: mmce.test.mean=0.0306
+#&gt; [Resample] OOB bootstrapping iter 382: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 383: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 384: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 385: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 386: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 387: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 388: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 389: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 390: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 391: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 392: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 393: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 394: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 395: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 396: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 397: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 398: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 399: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 400: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 401: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 402: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 403: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 404: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 405: mmce.test.mean=0.022
+#&gt; [Resample] OOB bootstrapping iter 406: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 407: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 408: mmce.test.mean=0.0323
+#&gt; [Resample] OOB bootstrapping iter 409: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 410: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 411: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 412: mmce.test.mean=0.0303
+#&gt; [Resample] OOB bootstrapping iter 413: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 414: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 415: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 416: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 417: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 418: mmce.test.mean=0.0238
+#&gt; [Resample] OOB bootstrapping iter 419: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 420: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 421: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 422: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 423: mmce.test.mean=0.0302
+#&gt; [Resample] OOB bootstrapping iter 424: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 425: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 426: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 427: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 428: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 429: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 430: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 431: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 432: mmce.test.mean=0.0219
+#&gt; [Resample] OOB bootstrapping iter 433: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 434: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 435: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 436: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 437: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 438: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 439: mmce.test.mean=0.0304
+#&gt; [Resample] OOB bootstrapping iter 440: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 441: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 442: mmce.test.mean=0.023
+#&gt; [Resample] OOB bootstrapping iter 443: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 444: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 445: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 446: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 447: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 448: mmce.test.mean=0.0303
+#&gt; [Resample] OOB bootstrapping iter 449: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 450: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 451: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 452: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 453: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 454: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 455: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 456: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 457: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 458: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 459: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 460: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 461: mmce.test.mean=0.0221
+#&gt; [Resample] OOB bootstrapping iter 462: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 463: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 464: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 465: mmce.test.mean=0.0233
+#&gt; [Resample] OOB bootstrapping iter 466: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 467: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 468: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 469: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 470: mmce.test.mean=0.0229
+#&gt; [Resample] OOB bootstrapping iter 471: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 472: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 473: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 474: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 475: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 476: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 477: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 478: mmce.test.mean=0.0233
+#&gt; [Resample] OOB bootstrapping iter 479: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 480: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 481: mmce.test.mean=0.0318
+#&gt; [Resample] OOB bootstrapping iter 482: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 483: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 484: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 485: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 486: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 487: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 488: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 489: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 490: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 491: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 492: mmce.test.mean=0.0303
+#&gt; [Resample] OOB bootstrapping iter 493: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 494: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 495: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 496: mmce.test.mean=0.0232
+#&gt; [Resample] OOB bootstrapping iter 497: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 498: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 499: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 500: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 501: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 502: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 503: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 504: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 505: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 506: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 507: mmce.test.mean=0.0201
+#&gt; [Resample] OOB bootstrapping iter 508: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 509: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 510: mmce.test.mean=0.0239
+#&gt; [Resample] OOB bootstrapping iter 511: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 512: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 513: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 514: mmce.test.mean=0.0308
+#&gt; [Resample] OOB bootstrapping iter 515: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 516: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 517: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 518: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 519: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 520: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 521: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 522: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 523: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 524: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 525: mmce.test.mean=0.0232
+#&gt; [Resample] OOB bootstrapping iter 526: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 527: mmce.test.mean=0.0311
+#&gt; [Resample] OOB bootstrapping iter 528: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 529: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 530: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 531: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 532: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 533: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 534: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 535: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 536: mmce.test.mean=0.0232
+#&gt; [Resample] OOB bootstrapping iter 537: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 538: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 539: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 540: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 541: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 542: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 543: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 544: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 545: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 546: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 547: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 548: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 549: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 550: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 551: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 552: mmce.test.mean=0.0223
+#&gt; [Resample] OOB bootstrapping iter 553: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 554: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 555: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 556: mmce.test.mean=0.0326
+#&gt; [Resample] OOB bootstrapping iter 557: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 558: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 559: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 560: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 561: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 562: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 563: mmce.test.mean=0.0244
+#&gt; [Resample] OOB bootstrapping iter 564: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 565: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 566: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 567: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 568: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 569: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 570: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 571: mmce.test.mean=0.0306
+#&gt; [Resample] OOB bootstrapping iter 572: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 573: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 574: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 575: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 576: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 577: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 578: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 579: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 580: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 581: mmce.test.mean=0.0313
+#&gt; [Resample] OOB bootstrapping iter 582: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 583: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 584: mmce.test.mean=0.0214
+#&gt; [Resample] OOB bootstrapping iter 585: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 586: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 587: mmce.test.mean=0.0239
+#&gt; [Resample] OOB bootstrapping iter 588: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 589: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 590: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 591: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 592: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 593: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 594: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 595: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 596: mmce.test.mean=0.023
+#&gt; [Resample] OOB bootstrapping iter 597: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 598: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 599: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 600: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 601: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 602: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 603: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 604: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 605: mmce.test.mean=0.0226
+#&gt; [Resample] OOB bootstrapping iter 606: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 607: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 608: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 609: mmce.test.mean=0.0304
+#&gt; [Resample] OOB bootstrapping iter 610: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 611: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 612: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 613: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 614: mmce.test.mean=0.0221
+#&gt; [Resample] OOB bootstrapping iter 615: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 616: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 617: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 618: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 619: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 620: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 621: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 622: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 623: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 624: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 625: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 626: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 627: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 628: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 629: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 630: mmce.test.mean=0.0309
+#&gt; [Resample] OOB bootstrapping iter 631: mmce.test.mean=0.0244
+#&gt; [Resample] OOB bootstrapping iter 632: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 633: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 634: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 635: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 636: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 637: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 638: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 639: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 640: mmce.test.mean=0.0311
+#&gt; [Resample] OOB bootstrapping iter 641: mmce.test.mean=0.0228
+#&gt; [Resample] OOB bootstrapping iter 642: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 643: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 644: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 645: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 646: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 647: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 648: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 649: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 650: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 651: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 652: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 653: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 654: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 655: mmce.test.mean=0.0306
+#&gt; [Resample] OOB bootstrapping iter 656: mmce.test.mean=0.0244
+#&gt; [Resample] OOB bootstrapping iter 657: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 658: mmce.test.mean=0.0223
+#&gt; [Resample] OOB bootstrapping iter 659: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 660: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 661: mmce.test.mean=0.0295
+#&gt; [Resample] OOB bootstrapping iter 662: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 663: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 664: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 665: mmce.test.mean=0.0299
+#&gt; [Resample] OOB bootstrapping iter 666: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 667: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 668: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 669: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 670: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 671: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 672: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 673: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 674: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 675: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 676: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 677: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 678: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 679: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 680: mmce.test.mean=0.0308
+#&gt; [Resample] OOB bootstrapping iter 681: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 682: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 683: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 684: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 685: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 686: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 687: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 688: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 689: mmce.test.mean=0.0238
+#&gt; [Resample] OOB bootstrapping iter 690: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 691: mmce.test.mean=0.0232
+#&gt; [Resample] OOB bootstrapping iter 692: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 693: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 694: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 695: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 696: mmce.test.mean=0.0217
+#&gt; [Resample] OOB bootstrapping iter 697: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 698: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 699: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 700: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 701: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 702: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 703: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 704: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 705: mmce.test.mean=0.0239
+#&gt; [Resample] OOB bootstrapping iter 706: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 707: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 708: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 709: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 710: mmce.test.mean=0.0192
+#&gt; [Resample] OOB bootstrapping iter 711: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 712: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 713: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 714: mmce.test.mean=0.026
+#&gt; [Resample] OOB bootstrapping iter 715: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 716: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 717: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 718: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 719: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 720: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 721: mmce.test.mean=0.0233
+#&gt; [Resample] OOB bootstrapping iter 722: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 723: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 724: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 725: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 726: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 727: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 728: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 729: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 730: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 731: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 732: mmce.test.mean=0.0238
+#&gt; [Resample] OOB bootstrapping iter 733: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 734: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 735: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 736: mmce.test.mean=0.0238
+#&gt; [Resample] OOB bootstrapping iter 737: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 738: mmce.test.mean=0.0291
+#&gt; [Resample] OOB bootstrapping iter 739: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 740: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 741: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 742: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 743: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 744: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 745: mmce.test.mean=0.03
+#&gt; [Resample] OOB bootstrapping iter 746: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 747: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 748: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 749: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 750: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 751: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 752: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 753: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 754: mmce.test.mean=0.0236
+#&gt; [Resample] OOB bootstrapping iter 755: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 756: mmce.test.mean=0.022
+#&gt; [Resample] OOB bootstrapping iter 757: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 758: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 759: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 760: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 761: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 762: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 763: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 764: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 765: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 766: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 767: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 768: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 769: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 770: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 771: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 772: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 773: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 774: mmce.test.mean=0.0219
+#&gt; [Resample] OOB bootstrapping iter 775: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 776: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 777: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 778: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 779: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 780: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 781: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 782: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 783: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 784: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 785: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 786: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 787: mmce.test.mean=0.0249
+#&gt; [Resample] OOB bootstrapping iter 788: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 789: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 790: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 791: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 792: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 793: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 794: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 795: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 796: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 797: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 798: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 799: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 800: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 801: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 802: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 803: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 804: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 805: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 806: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 807: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 808: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 809: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 810: mmce.test.mean=0.0254
+#&gt; [Resample] OOB bootstrapping iter 811: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 812: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 813: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 814: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 815: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 816: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 817: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 818: mmce.test.mean=0.0316
+#&gt; [Resample] OOB bootstrapping iter 819: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 820: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 821: mmce.test.mean=0.0305
+#&gt; [Resample] OOB bootstrapping iter 822: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 823: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 824: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 825: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 826: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 827: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 828: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 829: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 830: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 831: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 832: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 833: mmce.test.mean=0.0223
+#&gt; [Resample] OOB bootstrapping iter 834: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 835: mmce.test.mean=0.0295
+#&gt; [Resample] OOB bootstrapping iter 836: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 837: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 838: mmce.test.mean=0.0286
+#&gt; [Resample] OOB bootstrapping iter 839: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 840: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 841: mmce.test.mean=0.0303
+#&gt; [Resample] OOB bootstrapping iter 842: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 843: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 844: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 845: mmce.test.mean=0.0231
+#&gt; [Resample] OOB bootstrapping iter 846: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 847: mmce.test.mean=0.0314
+#&gt; [Resample] OOB bootstrapping iter 848: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 849: mmce.test.mean=0.0274
+#&gt; [Resample] OOB bootstrapping iter 850: mmce.test.mean=0.0303
+#&gt; [Resample] OOB bootstrapping iter 851: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 852: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 853: mmce.test.mean=0.0227
+#&gt; [Resample] OOB bootstrapping iter 854: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 855: mmce.test.mean=0.0284
+#&gt; [Resample] OOB bootstrapping iter 856: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 857: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 858: mmce.test.mean=0.0245
+#&gt; [Resample] OOB bootstrapping iter 859: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 860: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 861: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 862: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 863: mmce.test.mean=0.0271
+#&gt; [Resample] OOB bootstrapping iter 864: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 865: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 866: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 867: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 868: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 869: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 870: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 871: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 872: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 873: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 874: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 875: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 876: mmce.test.mean=0.0225
+#&gt; [Resample] OOB bootstrapping iter 877: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 878: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 879: mmce.test.mean=0.0243
+#&gt; [Resample] OOB bootstrapping iter 880: mmce.test.mean=0.0241
+#&gt; [Resample] OOB bootstrapping iter 881: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 882: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 883: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 884: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 885: mmce.test.mean=0.0264
+#&gt; [Resample] OOB bootstrapping iter 886: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 887: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 888: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 889: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 890: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 891: mmce.test.mean=0.0281
+#&gt; [Resample] OOB bootstrapping iter 892: mmce.test.mean=0.028
+#&gt; [Resample] OOB bootstrapping iter 893: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 894: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 895: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 896: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 897: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 898: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 899: mmce.test.mean=0.0235
+#&gt; [Resample] OOB bootstrapping iter 900: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 901: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 902: mmce.test.mean=0.0248
+#&gt; [Resample] OOB bootstrapping iter 903: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 904: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 905: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 906: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 907: mmce.test.mean=0.024
+#&gt; [Resample] OOB bootstrapping iter 908: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 909: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 910: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 911: mmce.test.mean=0.0275
+#&gt; [Resample] OOB bootstrapping iter 912: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 913: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 914: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 915: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 916: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 917: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 918: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 919: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 920: mmce.test.mean=0.0229
+#&gt; [Resample] OOB bootstrapping iter 921: mmce.test.mean=0.0261
+#&gt; [Resample] OOB bootstrapping iter 922: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 923: mmce.test.mean=0.0289
+#&gt; [Resample] OOB bootstrapping iter 924: mmce.test.mean=0.0229
+#&gt; [Resample] OOB bootstrapping iter 925: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 926: mmce.test.mean=0.0247
+#&gt; [Resample] OOB bootstrapping iter 927: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 928: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 929: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 930: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 931: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 932: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 933: mmce.test.mean=0.0314
+#&gt; [Resample] OOB bootstrapping iter 934: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 935: mmce.test.mean=0.029
+#&gt; [Resample] OOB bootstrapping iter 936: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 937: mmce.test.mean=0.0317
+#&gt; [Resample] OOB bootstrapping iter 938: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 939: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 940: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 941: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 942: mmce.test.mean=0.0258
+#&gt; [Resample] OOB bootstrapping iter 943: mmce.test.mean=0.0285
+#&gt; [Resample] OOB bootstrapping iter 944: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 945: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 946: mmce.test.mean=0.0293
+#&gt; [Resample] OOB bootstrapping iter 947: mmce.test.mean=0.0297
+#&gt; [Resample] OOB bootstrapping iter 948: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 949: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 950: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 951: mmce.test.mean=0.0259
+#&gt; [Resample] OOB bootstrapping iter 952: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 953: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 954: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 955: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 956: mmce.test.mean=0.0292
+#&gt; [Resample] OOB bootstrapping iter 957: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 958: mmce.test.mean=0.031
+#&gt; [Resample] OOB bootstrapping iter 959: mmce.test.mean=0.0266
+#&gt; [Resample] OOB bootstrapping iter 960: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 961: mmce.test.mean=0.0276
+#&gt; [Resample] OOB bootstrapping iter 962: mmce.test.mean=0.03
+#&gt; [Resample] OOB bootstrapping iter 963: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 964: mmce.test.mean=0.025
+#&gt; [Resample] OOB bootstrapping iter 965: mmce.test.mean=0.0267
+#&gt; [Resample] OOB bootstrapping iter 966: mmce.test.mean=0.0283
+#&gt; [Resample] OOB bootstrapping iter 967: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 968: mmce.test.mean=0.0263
+#&gt; [Resample] OOB bootstrapping iter 969: mmce.test.mean=0.0273
+#&gt; [Resample] OOB bootstrapping iter 970: mmce.test.mean=0.0287
+#&gt; [Resample] OOB bootstrapping iter 971: mmce.test.mean=0.0306
+#&gt; [Resample] OOB bootstrapping iter 972: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 973: mmce.test.mean=0.0301
+#&gt; [Resample] OOB bootstrapping iter 974: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 975: mmce.test.mean=0.0255
+#&gt; [Resample] OOB bootstrapping iter 976: mmce.test.mean=0.0277
+#&gt; [Resample] OOB bootstrapping iter 977: mmce.test.mean=0.0246
+#&gt; [Resample] OOB bootstrapping iter 978: mmce.test.mean=0.0237
+#&gt; [Resample] OOB bootstrapping iter 979: mmce.test.mean=0.0278
+#&gt; [Resample] OOB bootstrapping iter 980: mmce.test.mean=0.0294
+#&gt; [Resample] OOB bootstrapping iter 981: mmce.test.mean=0.0215
+#&gt; [Resample] OOB bootstrapping iter 982: mmce.test.mean=0.0288
+#&gt; [Resample] OOB bootstrapping iter 983: mmce.test.mean=0.0239
+#&gt; [Resample] OOB bootstrapping iter 984: mmce.test.mean=0.0262
+#&gt; [Resample] OOB bootstrapping iter 985: mmce.test.mean=0.0257
+#&gt; [Resample] OOB bootstrapping iter 986: mmce.test.mean=0.0234
+#&gt; [Resample] OOB bootstrapping iter 987: mmce.test.mean=0.0251
+#&gt; [Resample] OOB bootstrapping iter 988: mmce.test.mean=0.0282
+#&gt; [Resample] OOB bootstrapping iter 989: mmce.test.mean=0.0242
+#&gt; [Resample] OOB bootstrapping iter 990: mmce.test.mean=0.0252
+#&gt; [Resample] OOB bootstrapping iter 991: mmce.test.mean=0.0272
+#&gt; [Resample] OOB bootstrapping iter 992: mmce.test.mean=0.0253
+#&gt; [Resample] OOB bootstrapping iter 993: mmce.test.mean=0.027
+#&gt; [Resample] OOB bootstrapping iter 994: mmce.test.mean=0.0265
+#&gt; [Resample] OOB bootstrapping iter 995: mmce.test.mean=0.0268
+#&gt; [Resample] OOB bootstrapping iter 996: mmce.test.mean=0.0269
+#&gt; [Resample] OOB bootstrapping iter 997: mmce.test.mean=0.0256
+#&gt; [Resample] OOB bootstrapping iter 998: mmce.test.mean=0.023
+#&gt; [Resample] OOB bootstrapping iter 999: mmce.test.mean=0.0279
+#&gt; [Resample] OOB bootstrapping iter 1000: mmce.test.mean=0.0258
+#&gt; [Resample] Aggr. Result: mmce.test.mean=0.0265
+
+binom_resample_boot
+#&gt; Resample Result
+#&gt; Task: Default %&gt;% select(default, income, balance)
+#&gt; Learner: classif.binomial
+#&gt; Aggr perf: mmce.test.mean=0.0265
+#&gt; Runtime: 56.7953</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Comment on the estimated standard errors obtained using the <code>glm()</code> function and using your bootstrap function.</li>
+</ol>
 </div>
 </div>
 
