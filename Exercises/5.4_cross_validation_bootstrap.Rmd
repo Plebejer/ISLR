@@ -1,0 +1,124 @@
+---
+title: "5.3 Cross-Validation and the Bootstrap"
+output:
+  html_document:
+    df_print: tibble
+    toc: yes
+  pdf_document:
+    latex_engine: lualatex
+    toc: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(tidyverse)
+library(ISLR)
+library(skimr)
+library(mlr)
+
+theme_set(theme_minimal())
+```
+# Applied
+## 5
+In Chapter 4, we used logistic regression to predict the probability of `default` using `income` and `balance` on the `Default` data set. We will now estimate the test error of this logistic regression model using the validation set approach. Do not forget to set a random seed before beginning your analysis.
+
+a) Fit a logistic regression model that uses `income` and `balance` to predict `default`.
+```{r}
+data("Default")
+set.seed(42)
+
+
+binom_task <- makeClassifTask(data = select(Default, default, income, balance),
+                              target = "default")
+
+binom_learner <- makeLearner("classif.binomial", 
+                           id = "logistic_regression",
+                           predict.type = "response")
+
+binom_model <- train(learner = binom_learner, 
+                     task    = binom_task)
+
+getLearnerModel(binom_model)
+```
+
+b) Using the validation set approach, estimate the test error of this model. In order to do this, you must perform the following steps:
+
+i. Split the sample set into a training set and a validation set.
+```{r}
+binom_resample_inst <- makeResampleInstance("Holdout", binom_task)
+```
+
+
+ii. Fit a multiple logistic regression model using only the training observations.
+```{r}
+binom_resample <- resample(learner    = binom_learner,
+                           task       = binom_task,
+                           resampling = binom_resample_inst)
+
+```
+Note that `resample` from `mlr` already calculated the test error.
+
+
+iii. Obtain a prediction of default status for each individual in the validation set by computing the posterior probability of default for that individual, and classifying the individual to the default category if the posterior probability is greater than 0.5.
+```{r}
+binom_predict <- predict(binom_model, 
+                         newdata = Default,
+                         subset = binom_resample_inst[["test.inds"]][[1]])
+```
+
+
+iv. Compute the validation set error, which is the fraction of the observations in the validation set that are misclassified
+
+```{r}
+performance(binom_predict)
+
+binom_predict[["data"]] %>% 
+  mutate(false = truth != response) %>% 
+  summarise(mean(false))
+```
+
+c) Repeat the process in (b) three times, using three different splits of the observations into a training set and a validation set. Com- ment on the results obtained.
+```{r}
+binom_resample_descs <-
+  seq(0.5, 0.9, by = 0.1) %>% 
+  set_names(str_c("Holdout: ", 1 - .)) %>% 
+  map(~ makeResampleDesc(method = "Holdout", split = .x))
+
+map(binom_resample_descs,
+      ~ resample(learner    = binom_learner,
+                 task       = binom_task,
+                 resampling = .x))
+
+# standard mlr split training set 2/3, test set 1/3:
+binom_resample
+```
+
+d) Now consider a logistic regression model that predicts the probability of default using income, balance, and a dummy variable for student. Estimate the test error for this model using the validation set approach. Comment on whether or not including a dummy variable for student leads to a reduction in the test error rate.
+```{r}
+binom_task_stud <- makeClassifTask(data = Default,
+                                   target = "default")
+
+binom_learner_stud <- makeLearner("classif.binomial", 
+                                  id = "logistic_regression",
+                                  predict.type = "response")
+
+binom_model_stud <- train(learner = binom_learner_stud, 
+                          task    = binom_task_stud)
+
+binom_resample_descs_stud <-
+  seq(0.5, 0.9, by = 0.1) %>% 
+  set_names(str_c("Holdout: ", 1 - .)) %>% 
+  map(~ makeResampleDesc(method = "Holdout", split = .x))
+
+map(binom_resample_descs_stud,
+      ~ resample(learner    = binom_learner_stud,
+                 task       = binom_task_stud,
+                 resampling = .x))
+```
+
