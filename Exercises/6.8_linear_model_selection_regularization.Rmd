@@ -1,0 +1,11 @@
+---
+title: "Linear Model Selection and Regularization"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#8
+In this exercise, we will generate simulated data, and will then use this data to perform best subset selection.
