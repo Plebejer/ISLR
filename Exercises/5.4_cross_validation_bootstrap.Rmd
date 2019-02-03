@@ -4,9 +4,6 @@ output:
   html_document:
     df_print: tibble
     toc: yes
-  pdf_document:
-    latex_engine: lualatex
-    toc: yes
 editor_options:
   chunk_output_type: inline
 ---
